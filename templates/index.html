@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyección ATSM</title>
+    <!-- Agregar Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #f0f4f8, #e0e7ff);
+            font-family: 'Arial', sans-serif;
+            color: #343a40;
+        }
+        .container {
+            margin-top: 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background-color: white;
+        }
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        p {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        .graph-container {
+            text-align: center;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        .graph-container img {
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .graph-container img:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .btn-forecast {
+            background-color: #007bff;
+            color: white;
+            transition: transform 0.2s ease;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .btn-forecast:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        /* Efecto de parpadeo en los puntos de "analizando..." */
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            animation: blink 1.2s infinite;
+        }
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+        /* Estilo para el mensaje "analizando..." */
+        #analyzing-text {
+            font-size: 14px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 10px;
+        }
+        /* Animación de desvanecimiento */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        /* Estilo para el icono */
+        .icon {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">ATSM Análisis</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/analisis">Análisis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/proyeccion">Proyección</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacto">Contacto</a>
+                </li>
+            </ul>
+            <button class="btn btn-outline-success ms-auto" id="btn-download">Descargar Datos</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 class="text-center">Análisis y Proyección de ATSM</h1>
+    <div class="icon text-center">
+        <i class="fas fa-chart-line"></i>
+    </div>
+    <p>Este gráfico muestra el comportamiento histórico del ATSM y te permite visualizar una proyección a futuro.</p>
+
+    <div class="graph-container">
+        <!-- Gráfico de datos históricos -->
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Gráfico Histórico" class="img-fluid">
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-forecast" id="btn-forecast">Ver Proyección a 10 Años</button>
+    </div>
+
+    <div id="analyzing-text" style="display: none;">
+        <p>Analizando red neuronal<span class="dot"></span><span class="dot"></span><span class="dot"></span></p>
+    </div>
+
+    <div class="graph-container mt-4" id="forecast-graph" style="display: none;">
+        <h2 class="text-center">Proyección de ATSM</h2>
+        <img id="forecast-img" class="img-fluid" alt="Gráfico de Proyección">
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2024 ATSM Análisis. Todos los derechos reservados.</p>
+</footer>
+
+<!-- Agregar Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('btn-forecast').addEventListener('click', function() {
+        // Mostrar texto "Analizando red neuronal..."
+        document.getElementById('analyzing-text').style.display = 'block';
+
+        // Simular análisis antes de mostrar la gráfica
+        setTimeout(function() {
+            fetch('/forecast')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('forecast-img').src = 'data:image/png;base64,' + data.forecast_plot;
+                document.getElementById('forecast-graph').style.display = 'block';
+                // Ocultar el texto "Analizando red neuronal..." después de mostrar la gráfica
+                document.getElementById('analyzing-text').style.display = 'none';
+            });
+        }, 1500); // Simular un tiempo de espera antes de la respuesta del servidor
+    });
+
+    document.getElementById('btn-download').addEventListener('click', function() {
+        // Lógica para descargar los datos
+        window.location.href = '/download-data'; 
+    });
+</script>
+
+</body>
+</html>
